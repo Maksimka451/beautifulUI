@@ -6,13 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,12 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.LightGray
-import androidx.compose.ui.graphics.Color.Companion.Transparent
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,23 +32,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.beautifului.data.Recipe
 import com.example.beautifului.data.strawberryCake
-import com.example.beautifului.ui.theme.AppBarCollapsedHeight
-import com.example.beautifului.ui.theme.AppBarExpendedHeight
-import com.example.beautifului.ui.theme.BeautifulUITheme
-import com.example.beautifului.ui.theme.Pink
-import com.example.beautifului.ui.theme.Shapes
+import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.insets.LocalWindowInsets
+import com.example.beautifului.ui.theme.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BeautifulUITheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    MainFragment(strawberryCake)
+                ProvideWindowInsets {
+                    Surface(color = White) {
+                        MainFragment(strawberryCake)
+                    }
                 }
             }
         }
@@ -72,7 +65,7 @@ fun ParallaxToolbar(recipe: Recipe) {
     val imageHeight = AppBarExpendedHeight - AppBarCollapsedHeight
     TopAppBar(
         contentPadding = PaddingValues(),
-        backgroundColor = Color.White,
+        backgroundColor = White,
         modifier = Modifier.height(AppBarExpendedHeight)
     ) {
         Column {
@@ -167,7 +160,21 @@ fun Content(recipe: Recipe) {
             ServingCalculator()
             IngredientsHeader()
             IngredientsList(recipe)
+            ShoppingListButton()
         }
+    }
+}
+
+@Composable
+fun ShoppingListButton() {
+    Button(
+        onClick = { /*TODO*/ },
+        elevation = null,
+        shape = Shapes.small,
+        colors = ButtonDefaults.buttonColors(backgroundColor = LightGray, contentColor = Color.Black),
+        modifier = Modifier.fillMaxWidth().padding(16.dp)
+    ) {
+        Text(text = "Add to shopping list", modifier = Modifier.padding(8.dp))
     }
 }
 
@@ -209,10 +216,11 @@ fun IngredientCard(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(bottom = 16.dp)
+        modifier = modifier.padding(bottom = 16.dp)
     ) {
         Card(
             shape = Shapes.large,
+            elevation = 0.dp,
             backgroundColor = LightGray,
             modifier = Modifier
                 .width(100.dp)
@@ -222,11 +230,11 @@ fun IngredientCard(
             Image(
                 painter = painterResource(id = iconResource),
                 contentDescription = null,
-                modifier = Modifier.padding()
+                modifier = Modifier.padding(16.dp)
                 )
-            Text(text = title, modifier = Modifier.width(100.dp), fontSize = 14.sp, fontWeight = FontWeight.Medium)
-            Text(text = subtitle, color = DarkGray, modifier = Modifier.width(100.dp), fontSize = 14.sp)
         }
+        Text(text = title, modifier = Modifier.width(100.dp), fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        Text(text = subtitle, color = DarkGray, modifier = Modifier.width(100.dp), fontSize = 14.sp)
     }
 }
 
